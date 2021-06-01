@@ -168,7 +168,11 @@ void laserCloudHandler(const sensor_msgs::PointCloud2ConstPtr &laserCloudMsg)
 
         if (N_SCANS == 16)
         {
-            scanID = int((angle + 15) / 2 + 0.5);
+            //FOR VELODYNE PUCK (VLP-16)
+            //scanID = int((angle + 15) / 2 + 0.5);
+            
+            //FOR OUSTER OS1-16 (FOV -22.5º + 22.5º)
+            scanID = int(angle / 3 + 8);
             if (scanID > (N_SCANS - 1) || scanID < 0)
             {
                 count--;
@@ -198,6 +202,16 @@ void laserCloudHandler(const sensor_msgs::PointCloud2ConstPtr &laserCloudMsg)
                 continue;
             }
         }
+        else if (N_SCANS == 128) //FOR OUSTER OS1-128 (FOV -22.5º + 22.5º)
+        {
+            scanID = int(angle * 2.8 + 64);
+            if (scanID > (N_SCANS - 1) || scanID < 0)
+            {
+                count--;
+                continue;
+            }
+        }
+
         else
         {
             printf("wrong scan number\n");
@@ -469,9 +483,9 @@ int main(int argc, char **argv)
 
     printf("scan line number %d \n", N_SCANS);
 
-    if(N_SCANS != 16 && N_SCANS != 32 && N_SCANS != 64)
+    if(N_SCANS != 16 && N_SCANS != 32 && N_SCANS != 64 && N_SCANS != 128)
     {
-        printf("only support velodyne with 16, 32 or 64 scan line!");
+        printf("only support velodyne with 16, 32 or 64 scan line and ouster with 16 or 128 scan line!");
         return 0;
     }
 
